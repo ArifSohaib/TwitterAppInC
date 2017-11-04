@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
     printf("%s", *msg);
     if ((echoStringLen = strlen(echoString)) > ECHOMAX)  /* Check input length */
         DieWithError("Echo word too long");
+    echoStringLen = 151;
     strcpy(echoString, "");
 
     if (argc == 4)
@@ -85,7 +86,6 @@ int main(int argc, char *argv[])
     printf("testing echoMsg.UserID %d\n", echoMsg.UserID);
     printf("testing echoMsg.request_Type %d\n", echoMsg.request_Type);
     printf("testing echoMsg.LeaderID %d\n", echoMsg.LeaderID);
-    // memset(*substr,0, 140 );
     strncpy(echoMsg.message, (echoString+11), sizeof(argv[2]));
     printf("size of message = %lu\n",sizeof(argv[2]));
     printf("echo string: %s\n", echoString);
@@ -97,13 +97,13 @@ int main(int argc, char *argv[])
     echoServAddr.sin_port   = htons(echoServPort);     /* Server port */
 
     /* Send the string to the server */
-    if (sendto(sock, echoMsg.message, echoStringLen, 0, (struct sockaddr *)
+    if (sendto(sock, echoString, echoStringLen, 0, (struct sockaddr *)
                &echoServAddr, sizeof(echoServAddr)) != echoStringLen)
         DieWithError("sendto() sent a different number of bytes than expected");
 
     /* Recv a response */
     fromSize = sizeof(fromAddr);
-    if ((respStringLen = recvfrom(sock, echoMsg.message, ECHOMAX, 0,
+    if ((respStringLen = recvfrom(sock, echoString, ECHOMAX, 0,
          (struct sockaddr *) &fromAddr, &fromSize)) != echoStringLen)
         DieWithError("recvfrom() failed");
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     /* null-terminate the received data */
     // echoMsg[respStringLen] = '\0';
-    printf("Received: %s\n", echoMsg.message);    /* Print the echoed arg */
+    printf("Received: %s\n", echoString);    /* Print the echoed arg */
     int i = 30;
     int j = i+atoi(echoMsg.message);
 
