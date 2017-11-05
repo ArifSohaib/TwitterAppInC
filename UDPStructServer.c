@@ -19,9 +19,12 @@ unsigned int UserID;                                      /* unique client ident
 
 unsigned int LeaderID;                                   /* unique client identifier */
 
-char message[140];      }ClientMessage ;                                 /* text message
+char message[140];      }ClientMessage ;                                 /* text message */
 
-//} ClientMessage;                                                   /* an unsigned int is 32 bits = 4 bytes */
+typedef struct{
+  int UserID;
+  int LeaderID;
+} Follow_Pair;
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +34,8 @@ int main(int argc, char *argv[])
     unsigned int cliAddrLen;         /* Length of incoming message */
     char echoBuffer[ECHOMAX];        /* Buffer for echo string */
     ClientMessage echoMsg;
+    Follow_Pair followList[400];         /* List to store leader-follower pairs*/
+    int follow_count = 0;
     char echoString[ECHOMAX];
 
     int users[200];
@@ -122,13 +127,33 @@ int main(int argc, char *argv[])
           break;
 
           case 2:
+
           printf("handling follow request\n");
+          Follow_Pair pair;
+          memset(&pair, 0, sizeof(pair));
+          //set new pair
+          pair.UserID = echoMsg.UserID;
+          pair.LeaderID = echoMsg.LeaderID;
+
           //handle follow request
+          if(follow_count < 400){
+            followList[follow_count] = pair;
+            follow_count += 1;
+            for(idx = 0; idx < num_users; idx++){
+              printf("user[%i]  = %i, %i\n", idx, followList[idx].UserID, followList[idx].LeaderID);
+            }
+            printf("\n");
+          }
           break;
 
           case 3:
+
           printf("handling post request\n");
           //handle post msg request
+          //open file
+
+          //write to file
+          //close file
           break;
 
 
