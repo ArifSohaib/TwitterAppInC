@@ -26,6 +26,11 @@ typedef struct{
   int LeaderID;
 } Follow_Pair;
 
+typedef struct{
+  int UserID;
+  char content[140];
+} Tweet;
+
 int main(int argc, char *argv[])
 {
     int sock;                        /* Socket */
@@ -40,6 +45,10 @@ int main(int argc, char *argv[])
 
     int users[200];
     int num_users = 0;
+
+    //storage for tweets
+    Tweet tweets[500];
+    int tweet_count = 0;
 
     unsigned short echoServPort;     /* Server port */
     int recvMsgSize;                 /* Size of received message */
@@ -139,8 +148,8 @@ int main(int argc, char *argv[])
           if(follow_count < 400){
             followList[follow_count] = pair;
             follow_count += 1;
-            for(idx = 0; idx < num_users; idx++){
-              printf("user[%i]  = %i, %i\n", idx, followList[idx].UserID, followList[idx].LeaderID);
+            for(idx = 0; idx < follow_count; idx++){
+              printf("followList[%i]  = user %i follows user %i\n", idx, followList[idx].UserID, followList[idx].LeaderID);
             }
             printf("\n");
           }
@@ -150,6 +159,21 @@ int main(int argc, char *argv[])
 
           printf("handling post request\n");
           //handle post msg request
+          //add to array
+          Tweet new_tweet;
+          if(tweet_count < 400){
+            // tweets[tweet_count].UserID = echoMsg.UserID;
+            // strcpy(tweets[tweet_count].content,echoMsg.message);
+            new_tweet.UserID = echoMsg.UserID;
+            strcpy(new_tweet.content, echoMsg.message);
+            tweets[tweet_count] = new_tweet;
+            printf("user %i said: %s\n", tweets[tweet_count].UserID, tweets[tweet_count].content);
+            tweet_count += 1;
+            for(idx = 0; idx < tweet_count; idx++){
+              printf("tweet[%i]  =  %s\n", idx, tweets[idx].content);
+            }
+            printf("\n");
+          }
           //open file
 
           //write to file
@@ -159,7 +183,8 @@ int main(int argc, char *argv[])
 
           case 4:
           printf("handling get request\n");
-            break;
+
+          break;
 
 
           //recieve all messages from loaderID being followed
