@@ -182,8 +182,15 @@ int main(int argc, char *argv[])
 
 
           case 4:
-          printf("handling get request\n");
-
+          // Tweet userTweets[100];
+          printf("handling get request from user %i\n", echoMsg.LeaderID);
+          for(idx = 0; idx < tweet_count; idx++){
+            if(tweets[idx].UserID == echoMsg.LeaderID){
+              // userTweets[idx] = tweets[idx];
+              printf("%s\n", tweets[idx].content);
+            }
+          }
+          printf("\n");
           break;
 
 
