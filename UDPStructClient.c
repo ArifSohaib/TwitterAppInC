@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     if ((argc < 6) || (argc > 7))    /* Test for correct number of arguments */
     {
-        fprintf(stderr,"Usage: %s <Server IP> <Msg> <RequestType> [<Echo Port>]\n", argv[0]);
+        fprintf(stderr,"Usage: %s <Server IP> <Msg> <RequestType> <UserID> <RequestID> [< Port>]\n", argv[0]);
         exit(1);
     }
 
