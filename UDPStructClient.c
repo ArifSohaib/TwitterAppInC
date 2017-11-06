@@ -32,46 +32,66 @@ int main(int argc, char *argv[])
     ClientMessage echoMsg;
     int echoStringLen;               /* Length of string to echo */
     int respStringLen;               /* Length of received response */
+    char requestType;
+    char UserID[5];
+    char LeaderID[5];
 
-    if ((argc < 3) || (argc > 4))    /* Test for correct number of arguments */
+    if ((argc < 6) || (argc > 7))    /* Test for correct number of arguments */
     {
-        fprintf(stderr,"Usage: %s <Server IP> <Echo Word> [<Echo Port>]\n", argv[0]);
+        fprintf(stderr,"Usage: %s <Server IP> <Msg> <RequestType> [<Echo Port>]\n", argv[0]);
         exit(1);
     }
 
+
     servIP = argv[1];           /* First arg: server IP address (dotted quad) */
     echoString = argv[2];       /* Second arg: string to echo */
+    requestType = argv[3][0];      /* Third arg: requestType */
+    strcpy(UserID ,argv[4]);
+
+    strcpy(LeaderID , argv[5]);
+
     printf("echoString %s\n", argv[2]);
     int msg_size = sizeof(argv[2]);
-    char *msg[140];
-    strcpy(*msg, argv[2]);
-    printf("%s", *msg);
+    char msg[140];
+    strcpy(msg, argv[2]);
+    printf("msg = %s\n", msg);
     if ((echoStringLen = strlen(echoString)) > ECHOMAX)  /* Check input length */
         DieWithError("Echo word too long");
-    echoStringLen = 151;
+    if(strlen(UserID) != 5){
+      DieWithError("UserID must be 5 digits");
+    }
+    if(strlen(LeaderID) != 5){
+      DieWithError("LeaderID must be 5 digits");
+    }
+    echoStringLen = 152;
     strcpy(echoString, "");
 
-    if (argc == 4)
-        echoServPort = atoi(argv[3]);  /* Use given port, if any */
+    if (argc == 7)
+        echoServPort = atoi(argv[6]);  /* Use given port, if any */
     else
         echoServPort = 7;  /* 7 is the well-known port for the echo service */
-
+    printf("sending to id %s\n", servIP);
+    printf("sending to port %i\n", echoServPort);
     /* Create a datagram/UDP socket */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
         DieWithError("socket() failed");
 
     /*Construct the message*/
     //clear the message string
-    memset(echoString, 0, 151); //size of string to convert
+    memset(echoString, 0, 152); //size of string to convert
+    printf("memsetdone");
     //first set a test request_Type
-    strcpy(echoString, "1");
+    // strcpy(echoString, "4");
+    // strcpy(echoString, (char)requestType);
+    echoString[0] = requestType;
     //then add a 5 digit userID
-    strcpy(echoString+1, "12345");
+    printf("UserID %s", UserID);
+    strcpy(echoString+1, UserID);
     //then a 5 digit leaderID
-    strcpy(echoString+6, "67890");
+    strcpy(echoString+6, LeaderID);
     //then the message
-    printf("argv[2] %s\n", *msg);
-    strcpy(echoString+11,*msg);
+    printf("argv[2] %s\n", msg);
+    strcpy(echoString+11,msg);
     printf("echoString+11 =  %s\n", (echoString+11));
     memset(&echoMsg, 0, sizeof(echoMsg));
     // strcpy(echoMsg.message,argv[2]);
@@ -116,10 +136,6 @@ int main(int argc, char *argv[])
     /* null-terminate the received data */
     // echoMsg[respStringLen] = '\0';
     printf("Received: %s\n", echoString);    /* Print the echoed arg */
-    int i = 30;
-    int j = i+atoi(echoMsg.message);
-
-
     close(sock);
     exit(0);
 }
